@@ -1,7 +1,8 @@
 //import all the modules require
 const fs = require('fs')
-const readLine = require('readline')
-const writeStream = fs.createWriteStream(femaleRegion.txt)
+const readline = require('readline')
+const _ = require('lodash')
+//const writeStream = fs.createWriteStream(femaleRegion.txt)
 
 //Use try and catch to handle the error where ever required
 //return the callback with appropriate data where ever require in all the methods
@@ -15,8 +16,6 @@ const writeStream = fs.createWriteStream(femaleRegion.txt)
 
 
 const readFileContentsLineByLine = (fileName, cb) => {
- 
-
   
   let fileContents = [];
 
@@ -26,6 +25,15 @@ const readFileContentsLineByLine = (fileName, cb) => {
     terminal: false
   });
 
+  rl.on('line',(line)=>{
+    fileContents.push(line)
+    console.log('the file content is ', fileContents.length)
+    // const myArray = line.split('\n');
+    // for(const element of myArray){
+    //   fileContents.push(element)
+    // }
+  })
+  cb(null, fileContents)
 
 }
 
