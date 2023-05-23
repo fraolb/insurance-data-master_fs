@@ -2,7 +2,7 @@
 const fs = require("fs");
 const readline = require("readline");
 const _ = require("lodash");
-//const writeStream = fs.createWriteStream(femaleRegion.txt)
+//const writeStream = fs.createWriteStream(femaleRegion.txt);
 
 //Use try and catch to handle the error where ever required
 //return the callback with appropriate data where ever require in all the methods
@@ -41,9 +41,9 @@ const readFileContentsLineByLine = (fileName, cb) => {
 //Filter all the records for female candidates given region as southwest.
 
 const filterFemaleCandidates = (fileContents, cb) => {
-  let filteredData = fileContents.filter((item)=>{
-    return item.includes('female') && item.includes('southwest');
-  })
+  let filteredData = fileContents.filter((item) => {
+    return item.includes("female") && item.includes("southwest");
+  });
   cb(null, filteredData);
   //use lodash.compact() method if required
 };
@@ -51,6 +51,13 @@ const filterFemaleCandidates = (fileContents, cb) => {
 //This method will write filtered data in the output file
 const writeFilteredDataToFile = (outputFileName, filteredData, cb) => {
   //use writeFile method to write the filteredData
+  fs.writeFile(outputFileName, filteredData.join("\n"), (error) => {
+    if (error) {
+      cb(error);
+    } else {
+      cb(null);
+    }
+  });
 };
 
 //This method will read the file content using Streams
@@ -59,12 +66,26 @@ const writeFilteredDataToFile = (outputFileName, filteredData, cb) => {
 const readFileContentsUsingStream = (fileName, cb) => {
   let fileContents = [];
 
-  fs.createReadStream(fileName).on("error", (err) => {
-    console.log(
-      "Error while reading contents of file using streams, ERROR::",
-      err
-    );
-    cb("Encountered error while reading file contents using streams..!");
+  const readStream = fs.createReadStream(fileName, { encoding: "utf8" });
+
+  readStream.on("data", (chunk) => {
+    const lines = chunk.split("\n");
+    // Process each line individually
+    lines.forEach((line) => {
+      if(line.includes('male') || line.includes('female')){
+        fileContents.push(line);
+      }
+
+    });
+  });
+
+  readStream.on("error", (error) => {
+    console.log("Error while reading contents of file using streams:", error);
+    cb("Encountered error while reading file contents using streams!");
+  });
+
+  readStream.on("end", () => {
+    cb(null, fileContents);
   });
 };
 
@@ -73,8 +94,11 @@ const readFileContentsUsingStream = (fileName, cb) => {
 //use map if required to filter the data
 
 const filterDataWithNoChildren = (fileContents, cb) => {
-  let filteredData;
   //use lodash.compact() if required
+  let filteredData = fileContents.filter((item) => {
+    return item.includes("0,") || item.includes("0 ");
+  });
+  cb(null, filteredData);
 };
 
 module.exports = {
