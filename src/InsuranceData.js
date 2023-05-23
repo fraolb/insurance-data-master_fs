@@ -41,8 +41,10 @@ const readFileContentsLineByLine = (fileName, cb) => {
 //Filter all the records for female candidates given region as southwest.
 
 const filterFemaleCandidates = (fileContents, cb) => {
-  let filteredData;
-
+  let filteredData = fileContents.filter((item)=>{
+    return item.includes('female') && item.includes('southwest');
+  })
+  cb(null, filteredData);
   //use lodash.compact() method if required
 };
 
